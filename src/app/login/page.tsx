@@ -20,6 +20,9 @@ export default function LoginPage() {
       <p />
       <button onClick={authState.handleLogin}>Login</button>
       <button onClick={() => router.push('/sign-up')}>Sign up</button>
+
+      <p>Email: sample@sample.com</p>
+      <p>Password: sample1234</p>
     </div>
   );
 }
