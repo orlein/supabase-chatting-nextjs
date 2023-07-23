@@ -1,29 +1,26 @@
 'use client';
 
 import {
-  asyncSetChannelThunk,
+  asyncReadChannelsThunk,
   selectChannel,
 } from '@/features/channelSlice/channelSlice';
+import useChannelSlice from '@/features/channelSlice/useChannelSlice';
 import useAppDispatch from '@/hooks/useAppDispatch';
 import useAppSelector from '@/hooks/useAppSelector';
 
 export default function ChannelList() {
-  const { channels } = useAppSelector(selectChannel);
-  const dispatch = useAppDispatch();
+  const { channelState } = useChannelSlice();
 
   return (
     <div>
       <h1>Channel List</h1>
-      <button
-        onClick={() => {
-          dispatch(asyncSetChannelThunk({}));
-        }}
-      >
-        fetch channel
-      </button>
+      <button>fetch channel</button>
       <ul>
-        {channels.map((channel) => (
-          <li key={channel.id}>{channel.slug}</li>
+        {channelState.channels.map((channel) => (
+          <li key={channel.id}>
+            <p>{channel.slug}</p>
+            <button>remove</button>
+          </li>
         ))}
       </ul>
     </div>
