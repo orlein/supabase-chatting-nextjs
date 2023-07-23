@@ -1,3 +1,5 @@
+'use client';
+
 import ChannelMessageList from '@/app/c/[id]/ChannelMessageList';
 import useAuthGuard from '@/hooks/useAuthGuard';
 
@@ -5,7 +7,7 @@ type SingleChannelPageProps = {
   params: { id: number };
 };
 
-export default async function SingleChannelPage(props: SingleChannelPageProps) {
+export default function SingleChannelPage(props: SingleChannelPageProps) {
   useAuthGuard();
 
   return (
