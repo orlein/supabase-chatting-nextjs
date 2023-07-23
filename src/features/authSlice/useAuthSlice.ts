@@ -8,6 +8,7 @@ import { listenAuthSession } from '@/features/authSlice/authSocket';
 import useAppDispatch from '@/hooks/useAppDispatch';
 import useAppSelector from '@/hooks/useAppSelector';
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { useRouter } from 'next/navigation';
 import React from 'react';
 
 export type NewAuthState = {
@@ -94,6 +95,7 @@ const newAuthSlice = createSlice({
 export default function useAuthSlice() {
   const dispatch = useAppDispatch();
   const state = useAppSelector(selectAuth);
+  const router = useRouter();
 
   const [newAuthState, dispatchNewAuth] = React.useReducer(
     newAuthSlice.reducer,
@@ -141,22 +143,46 @@ export default function useAuthSlice() {
   const handleLogin = React.useCallback(async () => {
     await dispatch(asyncLoginThunk(newAuthState.login));
     dispatchNewAuth(newAuthSlice.actions.resetNewAuthLogin());
-  }, [dispatch, newAuthState.login]);
+    router.push('/');
+  }, [dispatch, newAuthState.login, router]);
 
   const handleSignUp = React.useCallback(async () => {
     await dispatch(asyncLoginThunk(newAuthState.signUp));
     dispatchNewAuth(newAuthSlice.actions.resetNewAuthSignUp());
-  }, [dispatch, newAuthState.signUp]);
+    router.refresh();
+  }, [dispatch, newAuthState.signUp, router]);
 
   const handleSignOut = React.useCallback(async () => {
     await dispatch(asyncLoginThunk(newAuthState.signUp));
     dispatchNewAuth(newAuthSlice.actions.resetNewAuthLogin());
     dispatchNewAuth(newAuthSlice.actions.resetNewAuthSignUp());
-  }, [dispatch, newAuthState.signUp]);
+    router.refresh();
+  }, [dispatch, newAuthState.signUp, router]);
+
+  const handleKeyEnterLogin: React.KeyboardEventHandler<HTMLInputElement> =
+    React.useCallback(
+      (event) => {
+        if (event.key === 'Enter') {
+          handleLogin();
+        }
+      },
+      [handleLogin]
+    );
+
+  const handleKeyEnterSignUp: React.KeyboardEventHandler<HTMLInputElement> =
+    React.useCallback(
+      (event) => {
+        if (event.key === 'Enter') {
+          handleSignUp();
+        }
+      },
+      [handleSignUp]
+    );
 
   return {
     authState: {
       ...state,
+      isLogin: Boolean(state.session),
       handleLogin,
       handleSignUp,
       handleSignOut,
@@ -165,11 +191,13 @@ export default function useAuthSlice() {
       ...newAuthState.login,
       handleChangeNewAuthLoginEmail,
       handleChangeNewAuthLoginPassword,
+      handleKeyEnterLogin,
     },
     signUpState: {
       ...newAuthState.signUp,
       handleChangeNewAuthSignUpEmail,
       handleChangeNewAuthSignUpPassword,
+      handleKeyEnterSignUp,
     },
   };
 }

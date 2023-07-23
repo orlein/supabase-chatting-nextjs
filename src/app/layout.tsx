@@ -3,15 +3,15 @@ import './styles/globals.css';
 
 export default function RootLayout(props: React.PropsWithChildren) {
   return (
-    <Providers>
-      <html lang="ko">
-        <body>
+    <html lang="ko">
+      <body>
+        <Providers>
           <section>
             <header></header>
             <main>{props.children}</main>
           </section>
-        </body>
-      </html>
-    </Providers>
+        </Providers>
+      </body>
+    </html>
   );
 }

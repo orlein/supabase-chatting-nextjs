@@ -1,5 +1,5 @@
 type Backend<T = unknown> = {
-  type: 'supabase' | 'supabase-edgefunction' | 'custom' | 'socket.io';
+  type: 'supabase' | 'supabase-serverside' | 'custom' | 'socket.io';
   instance: T;
 };
 

@@ -96,7 +96,7 @@ export default function useMessageSlice(props: { channel_id: number }) {
             message: newMessageState.message,
           })
         );
-        dispatch(newMessageSlice.actions.resetNewMessage());
+        dispatchNewMessage(newMessageSlice.actions.resetNewMessage());
       },
       [dispatch, newMessageState.message, props.channel_id]
     );
@@ -110,7 +110,7 @@ export default function useMessageSlice(props: { channel_id: number }) {
               message: newMessageState.message,
             })
           );
-          dispatch(newMessageSlice.actions.resetNewMessage());
+          dispatchNewMessage(newMessageSlice.actions.resetNewMessage());
         }
       },
       [dispatch, newMessageState.message, props.channel_id]

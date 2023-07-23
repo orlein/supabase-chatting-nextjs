@@ -33,9 +33,13 @@ export const asyncCreateChannelThunk = createAppAsyncThunk(
   'channel/asyncAddChannelThunk',
   async (params: Pick<CreateChannelParam, 'slug'>, thunkAPI) => {
     const { session } = thunkAPI.getState().auth;
+    if (!session?.user) {
+      throw new Error('User not logged in');
+    }
+
     const channel = await createChannel({
       ...params,
-      created_by: session!.user!.id,
+      created_by: session.user.id,
     }); // user is not null
     return channel;
   }

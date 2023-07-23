@@ -8,6 +8,7 @@ import {
 import createAppAsyncThunk from '@/features/redux/createAppAsyncThunk';
 import { RootState } from '@/redux/store';
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+
 type Message = Database['public']['Tables']['messages']['Row'] & {
   isPending?: boolean;
 };
@@ -39,9 +40,26 @@ export const asyncCreateMessageThunk = createAppAsyncThunk(
   'message/asyncCreateMessageThunk',
   async function (params: Omit<CreateMessageParams, 'user_id'>, thunkAPI) {
     const { session } = thunkAPI.getState().auth;
-    const user_id = session!.user!.id;
+
+    if (!session?.user) {
+      throw new Error('User not logged in');
+    }
+    const user_id = session.user.id;
+
+    const lastMessage = thunkAPI
+      .getState()
+      .message.messages[params.channel_id].reduce(
+        (acc, message) => {
+          if (message.id > acc.id) {
+            return message;
+          }
+          return acc;
+        },
+        { id: -1 }
+      );
+
     const newMessage = {
-      id: -1,
+      id: lastMessage.id + 1,
       channel_id: params.channel_id,
       message: params.message,
       inserted_at: new Date().toISOString(),
