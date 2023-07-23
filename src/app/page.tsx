@@ -1,9 +1,11 @@
-import serverSideAuth from '@/backend/serverSideAuth';
+'use client';
+
 import ChannelList from '@/common/components/ChannelList';
 import SignOutButton from '@/common/components/SignOutButton';
+import useAuthGuard from '@/hooks/useAuthGuard';
 
 export default async function IndexPage() {
-  await serverSideAuth();
+  useAuthGuard();
 
   return (
     <div>
@@ -12,7 +14,3 @@ export default async function IndexPage() {
     </div>
   );
 }
-
-export const metadata = {
-  title: 'Main: Chat App',
-};

@@ -1,12 +1,12 @@
 import ChannelMessageList from '@/app/c/[id]/ChannelMessageList';
-import serverSideAuth from '@/backend/serverSideAuth';
+import useAuthGuard from '@/hooks/useAuthGuard';
 
 type SingleChannelPageProps = {
   params: { id: number };
 };
 
 export default async function SingleChannelPage(props: SingleChannelPageProps) {
-  await serverSideAuth();
+  useAuthGuard();
 
   return (
     <div>
