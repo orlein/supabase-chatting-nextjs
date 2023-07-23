@@ -9,10 +9,9 @@ export default function RootLayout(props: React.PropsWithChildren) {
     <Providers>
       <html lang="ko">
         <body>
-          <section className={styles.container}>
-            <Nav />
-            <header className={styles.header}></header>
-            <main className={styles.main}>{props.children}</main>
+          <section>
+            <header></header>
+            <main>{props.children}</main>
           </section>
         </body>
       </html>
