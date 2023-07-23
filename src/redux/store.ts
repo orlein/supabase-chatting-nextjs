@@ -8,10 +8,12 @@ import {
 } from '@reduxjs/toolkit';
 import appConfigReducer from '@/features/appConfigSlice/appConfigSlice';
 import channelReducer from '@/features/channelSlice/channelSlice';
+import authReducer from '@/features/authSlice/authSlice';
 
 const rootReducer = combineReducers({
   appConfig: appConfigReducer,
   channel: channelReducer,
+  auth: authReducer,
 });
 
 export const appStore = configureStore({
