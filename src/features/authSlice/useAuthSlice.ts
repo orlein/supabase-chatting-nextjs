@@ -156,7 +156,7 @@ export default function useAuthSlice() {
     await dispatch(asyncLoginThunk(newAuthState.signUp));
     dispatchNewAuth(newAuthSlice.actions.resetNewAuthLogin());
     dispatchNewAuth(newAuthSlice.actions.resetNewAuthSignUp());
-    router.refresh();
+    router.replace('/login');
   }, [dispatch, newAuthState.signUp, router]);
 
   const handleKeyEnterLogin: React.KeyboardEventHandler<HTMLInputElement> =
