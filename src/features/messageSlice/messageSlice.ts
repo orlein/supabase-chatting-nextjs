@@ -32,7 +32,7 @@ export const asyncReadMessagesThunk = createAppAsyncThunk(
   'message/asyncReadMessagesThunk',
   async (params: ReadMessagesParams) => {
     const messages = await readMessages(params);
-    return { channel_id: params.channel_id, messages };
+    return { channel_id: Number(params.channel_id), messages };
   }
 );
 
@@ -45,22 +45,21 @@ export const asyncCreateMessageThunk = createAppAsyncThunk(
       throw new Error('User not logged in');
     }
     const user_id = session.user.id;
+    const channel_id = Number(params.channel_id);
 
-    const lastMessage = thunkAPI
-      .getState()
-      .message.messages[params.channel_id].reduce(
-        (acc, message) => {
-          if (message.id > acc.id) {
-            return message;
-          }
-          return acc;
-        },
-        { id: -1 }
-      );
+    const lastMessage = thunkAPI.getState().message.messages[channel_id].reduce(
+      (acc, message) => {
+        if (message.id > acc.id) {
+          return message;
+        }
+        return acc;
+      },
+      { id: -1 }
+    );
 
     const newMessage = {
       id: lastMessage.id + 1,
-      channel_id: params.channel_id,
+      channel_id,
       message: params.message,
       inserted_at: new Date().toISOString(),
       user_id,
@@ -68,7 +67,7 @@ export const asyncCreateMessageThunk = createAppAsyncThunk(
     };
     thunkAPI.dispatch(
       messageSlice.actions.createMessageAction({
-        channel_id: params.channel_id,
+        channel_id,
         message: newMessage,
       })
     );
@@ -76,7 +75,7 @@ export const asyncCreateMessageThunk = createAppAsyncThunk(
       ...params,
       user_id,
     });
-    return { channel_id: params.channel_id, message: newMessage };
+    return { channel_id, message: newMessage };
   }
 );
 
