@@ -1,19 +1,15 @@
 import {
-  createChannelAction,
+  asyncCreateChannelThunk,
   asyncReadChannelsThunk,
+  createChannelAction,
   deleteChannelAction,
   selectChannel,
   updateChannelAction,
-  asyncCreateChannelThunk,
 } from '@/features/channelSlice/channelSlice';
-import {
-  listenAddChannel,
-  listenRemoveChannel,
-  listenUpdateChannel,
-} from '@/features/channelSlice/channelSocket';
+import { listenChannel } from '@/features/channelSlice/channelSocket';
 import useAppDispatch from '@/hooks/useAppDispatch';
 import useAppSelector from '@/hooks/useAppSelector';
-import { PayloadAction, createReducer, createSlice } from '@reduxjs/toolkit';
+import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import React from 'react';
 
 export type NewChannelState = {
@@ -42,6 +38,10 @@ const newChannelSlice = createSlice({
       }
       state.name = action.payload;
     },
+    resetNewChannel: (state) => {
+      state.name = '';
+      state.error = null;
+    },
   },
 });
 
@@ -56,37 +56,25 @@ export default function useChannelSlice() {
 
   React.useEffect(() => {
     dispatch(asyncReadChannelsThunk({}));
-  }, []);
+  }, [dispatch]);
 
   React.useEffect(() => {
-    const sub = listenAddChannel((payload) => {
-      dispatch(createChannelAction(payload));
-    });
+    const sub = listenChannel(
+      (payload) => {
+        dispatch(createChannelAction(payload));
+      },
+      (payload) => {
+        dispatch(updateChannelAction(payload));
+      },
+      (payload) => {
+        dispatch(deleteChannelAction(payload));
+      }
+    );
 
     return () => {
       sub.unsubscribe();
     };
-  }, []);
-
-  React.useEffect(() => {
-    const sub = listenRemoveChannel((payload) => {
-      dispatch(deleteChannelAction(payload));
-    });
-
-    return () => {
-      sub.unsubscribe();
-    };
-  }, []);
-
-  React.useEffect(() => {
-    const sub = listenUpdateChannel((payload) => {
-      dispatch(updateChannelAction(payload));
-    });
-
-    return () => {
-      sub.unsubscribe();
-    };
-  }, []);
+  }, [dispatch]);
 
   const handleChangeNewChannelName: React.ChangeEventHandler<HTMLInputElement> =
     React.useCallback((e) => {
@@ -96,19 +84,24 @@ export default function useChannelSlice() {
     }, []);
 
   const handleClickCreateChannel: React.MouseEventHandler<HTMLButtonElement> =
-    React.useCallback((e) => {
-      e.preventDefault();
-      dispatch(asyncCreateChannelThunk({ slug: newChannelState.name }));
-    }, []);
+    React.useCallback(
+      (e) => {
+        e.preventDefault();
+        dispatch(asyncCreateChannelThunk({ slug: newChannelState.name }));
+        dispatchNewChannel(newChannelSlice.actions.resetNewChannel());
+      },
+      [dispatch, newChannelState.name]
+    );
 
   const handleKeyEnterCreateChannel: React.KeyboardEventHandler<HTMLInputElement> =
     React.useCallback(
       (e) => {
         if (e.key === 'Enter') {
           dispatch(asyncCreateChannelThunk({ slug: newChannelState.name }));
+          dispatchNewChannel(newChannelSlice.actions.resetNewChannel());
         }
       },
-      [newChannelState.name]
+      [dispatch, newChannelState.name]
     );
 
   return {

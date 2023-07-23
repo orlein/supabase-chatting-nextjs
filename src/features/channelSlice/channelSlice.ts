@@ -81,24 +81,32 @@ const channelSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder
-      .addCase(asyncReadChannelsThunk.fulfilled, (state, action) => {
+    builder.addCase(asyncCreateChannelThunk.fulfilled, (state) => {
+      state.loading = false;
+    });
+    builder.addCase(asyncReadChannelsThunk.fulfilled, (state, action) => {
+      state.loading = false;
+      state.channels = action.payload;
+    });
+    builder.addMatcher(
+      (action: PayloadAction) => action.type.endsWith('/fulfilled'),
+      (state) => {
         state.loading = false;
-        state.channels = action.payload;
-      })
-      .addMatcher(
-        (action: PayloadAction) => action.type.endsWith('/pending'),
-        (state) => {
-          state.loading = true;
-        }
-      )
-      .addMatcher(
-        (action: PayloadAction) => action.type.endsWith('/rejected'),
-        (state, action) => {
-          state.loading = false;
-          state.error = action.error.message || 'Unknown error occurred';
-        }
-      );
+      }
+    );
+    builder.addMatcher(
+      (action: PayloadAction) => action.type.endsWith('/pending'),
+      (state) => {
+        state.loading = true;
+      }
+    );
+    builder.addMatcher(
+      (action: PayloadAction) => action.type.endsWith('/rejected'),
+      (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Unknown error occurred';
+      }
+    );
   },
 });
 
