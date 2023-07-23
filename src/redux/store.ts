@@ -9,11 +9,13 @@ import {
 import appConfigReducer from '@/features/appConfigSlice/appConfigSlice';
 import channelReducer from '@/features/channelSlice/channelSlice';
 import authReducer from '@/features/authSlice/authSlice';
+import messageReducer from '@/features/messageSlice/messageSlice';
 
 const rootReducer = combineReducers({
   appConfig: appConfigReducer,
   channel: channelReducer,
   auth: authReducer,
+  message: messageReducer,
 });
 
 export const appStore = configureStore({
