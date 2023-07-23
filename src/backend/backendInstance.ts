@@ -5,7 +5,7 @@ import {
   createPagesBrowserClient,
 } from '@supabase/auth-helpers-nextjs';
 
-export const supabaseBackend: Backend<SupabaseClient> = {
+export const supabaseBackend: Backend<SupabaseClient<Database>> = {
   type: 'supabase',
   instance: createPagesBrowserClient<Database>(),
 };
