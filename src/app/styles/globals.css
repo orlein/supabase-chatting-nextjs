@@ -1,0 +1,21 @@
+html {
+  @media (prefers-color-scheme: dark) {
+    background-color: #000;
+    color: #fff;
+  }
+}
+body {
+  min-height: 100vh;
+  padding: 0;
+  margin: 0;
+  font-family: system-ui, sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+}
