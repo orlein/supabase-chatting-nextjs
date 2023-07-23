@@ -1,13 +1,18 @@
 import Backend from '@/backend/Backend';
 import { Database } from '@/common/types/database.types';
-import { createPagesBrowserClient } from '@supabase/auth-helpers-nextjs';
+import {
+  SupabaseClient,
+  createPagesBrowserClient,
+} from '@supabase/auth-helpers-nextjs';
 
-function createBackendInstance(backend: Backend) {
+export const supabaseBackend: Backend<SupabaseClient> = {
+  type: 'supabase',
+  instance: createPagesBrowserClient<Database>(),
+};
+
+function createBackendInstance(backend: Pick<Backend, 'type'>) {
   if (backend.type === 'supabase') {
-    return {
-      type: backend.type,
-      instance: createPagesBrowserClient<Database>(),
-    };
+    return supabaseBackend;
   }
 
   throw new Error('Unsupported backend type');
@@ -15,4 +20,6 @@ function createBackendInstance(backend: Backend) {
 
 const backendInstance = createBackendInstance({ type: 'supabase' });
 
-export default backendInstance;
+export default function getBackendInstance() {
+  return backendInstance;
+}
