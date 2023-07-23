@@ -1,9 +1,5 @@
-/* Core */
-import { createAsyncThunk } from "@reduxjs/toolkit";
-
-/* Instruments */
-import type { RootState, AppDispatch } from "../../redux/store";
-
+import { AppDispatch, RootState } from '@/redux/store';
+import { createAsyncThunk } from '@reduxjs/toolkit';
 /**
  * ? A utility function to create a typed Async Thunk Actions.
  */

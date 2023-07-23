@@ -1,12 +1,6 @@
 'use client';
 
-import {
-  asyncReadChannelsThunk,
-  selectChannel,
-} from '@/features/channelSlice/channelSlice';
 import useChannelSlice from '@/features/channelSlice/useChannelSlice';
-import useAppDispatch from '@/hooks/useAppDispatch';
-import useAppSelector from '@/hooks/useAppSelector';
 
 export default function ChannelList() {
   const { channelState } = useChannelSlice();
