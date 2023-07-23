@@ -8,7 +8,7 @@ import {
 import createAppAsyncThunk from '@/features/redux/createAppAsyncThunk';
 import { RootState } from '@/redux/store';
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-import { Session, User } from '@supabase/auth-helpers-nextjs';
+import { Session } from '@supabase/auth-helpers-nextjs';
 
 export type AuthState = {
   session: Session | null;
@@ -54,32 +54,37 @@ const authSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder
-      .addCase(asyncLoginThunk.fulfilled, (state, action) => {
+    builder.addCase(asyncLoginThunk.fulfilled, (state, action) => {
+      state.loading = false;
+      state.session = action.payload.session;
+    });
+    builder.addCase(asyncSignUpThunk.fulfilled, (state, action) => {
+      state.loading = false;
+      state.session = action.payload.session;
+    });
+    builder.addCase(asyncSignOutThunk.fulfilled, (state) => {
+      state.loading = false;
+      state.session = null;
+    });
+    builder.addMatcher(
+      (action: PayloadAction) => action.type.endsWith('/fulfilled'),
+      (state) => {
         state.loading = false;
-        state.session = action.payload.session;
-      })
-      .addCase(asyncSignUpThunk.fulfilled, (state, action) => {
+      }
+    );
+    builder.addMatcher(
+      (action: PayloadAction) => action.type.endsWith('/pending'),
+      (state) => {
+        state.loading = true;
+      }
+    );
+    builder.addMatcher(
+      (action: PayloadAction) => action.type.endsWith('/rejected'),
+      (state, action) => {
         state.loading = false;
-        state.session = action.payload.session;
-      })
-      .addCase(asyncSignOutThunk.fulfilled, (state) => {
-        state.loading = false;
-        state.session = null;
-      })
-      .addMatcher(
-        (action: PayloadAction) => action.type.endsWith('/pending'),
-        (state) => {
-          state.loading = true;
-        }
-      )
-      .addMatcher(
-        (action: PayloadAction) => action.type.endsWith('/rejected'),
-        (state, action) => {
-          state.loading = false;
-          state.error = action.error.message || 'Unknown error occurred';
-        }
-      );
+        state.error = action.error.message || 'Unknown error occurred';
+      }
+    );
   },
 });
 

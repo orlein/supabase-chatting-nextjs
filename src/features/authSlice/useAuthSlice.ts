@@ -82,6 +82,12 @@ const newAuthSlice = createSlice({
 
       state.login.password = action.payload;
     },
+    resetNewAuthLogin: (state) => {
+      state.login = initialNewAuthState.login;
+    },
+    resetNewAuthSignUp: (state) => {
+      state.signUp = initialNewAuthState.signUp;
+    },
   },
 });
 
@@ -102,7 +108,7 @@ export default function useAuthSlice() {
     return () => {
       sub.unsubscribe();
     };
-  }, []);
+  }, [dispatch]);
 
   const handleChangeNewAuthLoginEmail: React.ChangeEventHandler<HTMLInputElement> =
     React.useCallback((event) => {
@@ -134,15 +140,19 @@ export default function useAuthSlice() {
 
   const handleLogin = React.useCallback(async () => {
     await dispatch(asyncLoginThunk(newAuthState.login));
-  }, [newAuthState.login]);
+    dispatchNewAuth(newAuthSlice.actions.resetNewAuthLogin());
+  }, [dispatch, newAuthState.login]);
 
   const handleSignUp = React.useCallback(async () => {
     await dispatch(asyncLoginThunk(newAuthState.signUp));
-  }, [newAuthState.signUp]);
+    dispatchNewAuth(newAuthSlice.actions.resetNewAuthSignUp());
+  }, [dispatch, newAuthState.signUp]);
 
   const handleSignOut = React.useCallback(async () => {
     await dispatch(asyncLoginThunk(newAuthState.signUp));
-  }, [newAuthState.signUp]);
+    dispatchNewAuth(newAuthSlice.actions.resetNewAuthLogin());
+    dispatchNewAuth(newAuthSlice.actions.resetNewAuthSignUp());
+  }, [dispatch, newAuthState.signUp]);
 
   return {
     authState: {
