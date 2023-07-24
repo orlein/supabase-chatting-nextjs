@@ -7,7 +7,7 @@ export default function LoginPage() {
   const { loginState, authState } = useAuthSlice();
   const router = useRouter();
   return (
-    <div>
+    <>
       <h1>Login Form</h1>
       <p>Email</p>
       <input type="email" onChange={loginState.handleChangeNewAuthLoginEmail} />
@@ -18,11 +18,14 @@ export default function LoginPage() {
         onKeyDown={loginState.handleKeyEnterLogin}
       />
       <p />
-      <button onClick={authState.handleLogin}>Login</button>
-      <button onClick={() => router.push('/sign-up')}>Sign up</button>
-
-      <p>Email: sample@sample.com</p>
-      <p>Password: sample1234</p>
-    </div>
+      <div>
+        <button onClick={authState.handleLogin}>Login</button>
+        <button onClick={() => router.push('/sign-up')}>Sign up</button>
+      </div>
+      <div>
+        <p>Email: sample@sample.com</p>
+        <p>Password: sample1234</p>
+      </div>
+    </>
   );
 }

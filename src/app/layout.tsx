@@ -5,12 +5,7 @@ export default function RootLayout(props: React.PropsWithChildren) {
   return (
     <html lang="ko">
       <body>
-        <Providers>
-          <section>
-            <header></header>
-            <main>{props.children}</main>
-          </section>
-        </Providers>
+        <Providers>{props.children}</Providers>
       </body>
     </html>
   );

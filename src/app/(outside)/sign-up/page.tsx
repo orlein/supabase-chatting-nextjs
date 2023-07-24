@@ -24,6 +24,7 @@ export default function SignUpPage() {
       <p />
       <button onClick={authState.handleSignUp}>Sign Up</button>
       <button onClick={() => router.back()}>Back</button>
+      <p>{authState.error}</p>
     </div>
   );
 }

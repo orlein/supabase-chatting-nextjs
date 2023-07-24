@@ -1,6 +1,6 @@
 'use client';
 
-import SingleChannelMessage from '@/app/c/[id]/SingleChannelMessage';
+import SingleChannelMessage from '@/app/(inside)/c/[id]/SingleChannelMessage';
 import useMessageSlice from '@/features/messageSlice/useMessageSlice';
 import useAuthGuard from '@/hooks/useAuthGuard';
 import { useRouter } from 'next/navigation';

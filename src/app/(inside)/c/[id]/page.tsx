@@ -1,6 +1,6 @@
 'use client';
 
-import ChannelMessageList from '@/app/c/[id]/ChannelMessageList';
+import ChannelMessageList from '@/app/(inside)/c/[id]/ChannelMessageList';
 import useAuthGuard from '@/hooks/useAuthGuard';
 
 type SingleChannelPageProps = {
