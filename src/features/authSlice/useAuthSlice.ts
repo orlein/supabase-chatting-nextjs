@@ -66,24 +66,24 @@ const newAuthSlice = createSlice({
     },
     changeNewAuthSignUpEmail: (state, action: PayloadAction<string>) => {
       if (action.payload.length === 0) {
-        state.login.error = 'Email must not be empty';
+        state.signUp.error = 'Email must not be empty';
         return;
       }
 
       if (!emailRegex.test(action.payload)) {
-        state.login.error = 'Email format is invalid';
+        state.signUp.error = 'Email format is invalid';
         return;
       }
 
-      state.login.email = action.payload;
+      state.signUp.email = action.payload;
     },
     changeNewAuthSignUpPassword: (state, action: PayloadAction<string>) => {
       if (action.payload.length === 0) {
-        state.login.error = 'Password must not be empty';
+        state.signUp.error = 'Password must not be empty';
         return;
       }
 
-      state.login.password = action.payload;
+      state.signUp.password = action.payload;
     },
     resetNewAuthLogin: (state) => {
       state.login = initialNewAuthState.login;
