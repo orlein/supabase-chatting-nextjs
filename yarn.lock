@@ -154,6 +154,11 @@
     "@supabase/auth-helpers-shared" "0.4.1"
     set-cookie-parser "^2.6.0"
 
+"@supabase/auth-helpers-react@^0.4.1":
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/@supabase/auth-helpers-react/-/auth-helpers-react-0.4.1.tgz#9198cfe1ceae9935d04b2fdec84a7d806a8c711e"
+  integrity sha512-Y9ZWzhpsOX93rokmywDdclzTDPbHjybU7o4/FmXlAqta75msFxHV9WVTR6//SZf2Bca2Cf65Oa/j+fYtMWraDQ==
+
 "@supabase/auth-helpers-shared@0.4.1":
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/@supabase/auth-helpers-shared/-/auth-helpers-shared-0.4.1.tgz#46f53f7ac1e80f6bcb69b5bc95e15b237a80d819"
