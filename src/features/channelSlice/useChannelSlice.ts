@@ -69,7 +69,7 @@ export default function useChannelSlice() {
       (payload) => {
         dispatch(deleteChannelAction(payload));
       }
-    );
+    ).subscribe();
 
     return () => {
       sub.unsubscribe();

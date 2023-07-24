@@ -72,7 +72,7 @@ export default function useMessageSlice(props: { channel_id: number }) {
           })
         );
       }
-    );
+    ).subscribe();
 
     return () => {
       sub.unsubscribe();
