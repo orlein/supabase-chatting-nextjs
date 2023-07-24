@@ -9,7 +9,7 @@ import createAppAsyncThunk from '@/features/redux/createAppAsyncThunk';
 import { RootState } from '@/redux/store';
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
-type Message = Database['public']['Tables']['messages']['Row'] & {
+export type Message = Database['public']['Tables']['messages']['Row'] & {
   isPending?: boolean;
 };
 

@@ -1,8 +1,10 @@
 'use client';
 
+import SingleChannelMessage from '@/app/c/[id]/SingleChannelMessage';
 import useMessageSlice from '@/features/messageSlice/useMessageSlice';
 import useAuthGuard from '@/hooks/useAuthGuard';
 import { useRouter } from 'next/navigation';
+import styles from './ChannelMessageList.module.css';
 
 type ChannelMessageListProps = {
   channel_id: number;
@@ -31,12 +33,11 @@ export default function ChannelMessageList(props: ChannelMessageListProps) {
         onKeyDown={handleEnterCreateNewMessage}
       />
       <button onClick={handleClickCreateNewMessage}>add message</button>
-      {channelMessages.map((message) => (
-        <div key={message.id}>
-          <p>{message.message}</p>
-          <button>remove</button>
-        </div>
-      ))}
+      <div className={styles.list}>
+        {channelMessages.map((message) => (
+          <SingleChannelMessage key={message.id} {...message} />
+        ))}
+      </div>
     </div>
   );
 }
