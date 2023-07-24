@@ -5,6 +5,7 @@ import {
   createMessage,
   readMessages,
 } from '@/features/messageSlice/messageApi';
+import { readUser } from '@/features/messageSlice/userApi';
 import createAppAsyncThunk from '@/features/redux/createAppAsyncThunk';
 import { RootState } from '@/redux/store';
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
@@ -13,10 +14,18 @@ export type Message = Database['public']['Tables']['messages']['Row'] & {
   isPending?: boolean;
 };
 
-type MessageState = {
+export type MessageUser = Database['public']['Tables']['users']['Row'];
+
+export type MessageWithAuthor = Message & { author: MessageUser };
+
+export type MessageState = {
   messages: Record<
     Database['public']['Tables']['channels']['Row']['id'],
-    Message[]
+    MessageWithAuthor[]
+  >;
+  users: Record<
+    Database['public']['Tables']['channels']['Row']['id'],
+    MessageUser[]
   >;
   loading: boolean;
   error: string | null;
@@ -24,6 +33,7 @@ type MessageState = {
 
 const initialMessageState: MessageState = {
   messages: {},
+  users: {},
   loading: false,
   error: null,
 };
@@ -32,7 +42,25 @@ export const asyncReadMessagesThunk = createAppAsyncThunk(
   'message/asyncReadMessagesThunk',
   async (params: ReadMessagesParams) => {
     const messages = await readMessages(params);
-    return { channel_id: Number(params.channel_id), messages };
+
+    const maybeUsers = await Promise.all(
+      messages
+        .reduce((acc, message) => {
+          if (
+            acc.findIndex(
+              (accMessage) => accMessage.user_id === message.user_id
+            ) > -1
+          ) {
+            return [...acc];
+          }
+          return [...acc, message];
+        }, [] as Message[])
+        .map((message) => readUser({ user_id: message.user_id }))
+    );
+    const users = maybeUsers.filter(
+      (user) => typeof user !== 'undefined'
+    ) as MessageUser[];
+    return { channel_id: Number(params.channel_id), messages, users };
   }
 );
 
@@ -57,7 +85,7 @@ export const asyncCreateMessageThunk = createAppAsyncThunk(
       { id: -1 }
     );
 
-    const newMessage = {
+    const newMessage: Message = {
       id: lastMessage.id + 1,
       channel_id,
       message: params.message,
@@ -79,19 +107,40 @@ export const asyncCreateMessageThunk = createAppAsyncThunk(
   }
 );
 
+export const asyncAddUserThunk = createAppAsyncThunk(
+  'message/asyncAddUserThunk',
+  async (params: { channel_id: number; user_id: string }, thunkAPI) => {
+    const userIndex = thunkAPI
+      .getState()
+      .message.users[params.channel_id].findIndex(
+        (user) => user.id === params.user_id
+      );
+
+    if (userIndex > -1) {
+      return { type: 'DO_NOTHING' };
+    }
+
+    const user = await readUser({ user_id: params.user_id });
+
+    if (!user) {
+      return { type: 'DO_NOTHING' };
+    }
+
+    thunkAPI.dispatch(
+      messageSlice.actions.addUserAction({
+        channel_id: params.channel_id,
+        user,
+      })
+    );
+
+    return { type: 'DO_NOTHING' };
+  }
+);
+
 const messageSlice = createSlice({
   name: 'message',
   initialState: initialMessageState,
   reducers: {
-    setMessagesAction: (
-      state,
-      action: PayloadAction<{
-        channel_id: number;
-        messages: Message[];
-      }>
-    ) => {
-      state.messages[action.payload.channel_id] = action.payload.messages;
-    },
     createMessageAction: (
       state,
       action: PayloadAction<{
@@ -99,7 +148,18 @@ const messageSlice = createSlice({
         message: Message;
       }>
     ) => {
-      state.messages[action.payload.channel_id].push(action.payload.message);
+      const authorIndex = state.users[action.payload.channel_id].findIndex(
+        (user) => user.id === action.payload.message.user_id
+      );
+
+      if (authorIndex < 0) {
+        return;
+      }
+
+      state.messages[action.payload.channel_id].push({
+        ...action.payload.message,
+        author: state.users[action.payload.channel_id][authorIndex],
+      });
     },
     updateMessageAction: (
       state,
@@ -115,8 +175,18 @@ const messageSlice = createSlice({
         return;
       }
 
-      state.messages[action.payload.channel_id][messageIndex] =
-        action.payload.message;
+      const authorIndex = state.users[action.payload.channel_id].findIndex(
+        (user) => user.id === action.payload.message.user_id
+      );
+
+      if (authorIndex < 0) {
+        return;
+      }
+
+      state.messages[action.payload.channel_id][messageIndex] = {
+        ...action.payload.message,
+        author: state.users[action.payload.channel_id][authorIndex],
+      };
     },
     deleteMessageAction: (
       state,
@@ -134,6 +204,23 @@ const messageSlice = createSlice({
 
       state.messages[action.payload.channel_id].splice(messageIndex, 1);
     },
+    addUserAction: (
+      state,
+      action: PayloadAction<{
+        channel_id: number;
+        user: MessageUser;
+      }>
+    ) => {
+      const userIndex = state.users[action.payload.channel_id].findIndex(
+        (user) => user.id === action.payload.user.id
+      );
+
+      if (userIndex > -1) {
+        return;
+      }
+
+      state.users[action.payload.channel_id].push(action.payload.user);
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(asyncCreateMessageThunk.fulfilled, (state, action) => {
@@ -145,14 +232,27 @@ const messageSlice = createSlice({
         return;
       }
 
+      const authorIndex = state.users[action.payload.channel_id].findIndex(
+        (user) => user.id === action.payload.message.user_id
+      );
+
+      if (authorIndex < 0) {
+        return;
+      }
+
       state.messages[action.payload.channel_id][messageIndex] = {
         ...action.payload.message,
         isPending: false,
+        author: state.users[action.payload.channel_id][authorIndex],
       };
     });
     builder.addCase(asyncReadMessagesThunk.fulfilled, (state, action) => {
-      const { channel_id, messages } = action.payload;
-      state.messages[channel_id] = messages;
+      const { channel_id, messages, users } = action.payload;
+      state.messages[channel_id] = messages.map((message) => ({
+        ...message,
+        author: users.find((user) => user.id === message.user_id)!,
+      }));
+      state.users[channel_id] = users;
     });
     builder.addMatcher(
       (action: PayloadAction) => action.type.endsWith('/fulfilled'),
@@ -177,12 +277,8 @@ const messageSlice = createSlice({
   },
 });
 
-export const {
-  createMessageAction,
-  setMessagesAction,
-  updateMessageAction,
-  deleteMessageAction,
-} = messageSlice.actions;
+export const { createMessageAction, updateMessageAction, deleteMessageAction } =
+  messageSlice.actions;
 
 export const selectMessage = (state: RootState) => state.message;
 
