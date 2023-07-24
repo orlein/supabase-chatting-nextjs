@@ -1,6 +1,8 @@
 import { emailRegex } from '@/common/utils/format';
 import {
   asyncLoginThunk,
+  asyncSignOutThunk,
+  asyncSignUpThunk,
   selectAuth,
   setSessionAction,
 } from '@/features/authSlice/authSlice';
@@ -147,17 +149,17 @@ export default function useAuthSlice() {
   }, [dispatch, newAuthState.login, router]);
 
   const handleSignUp = React.useCallback(async () => {
-    await dispatch(asyncLoginThunk(newAuthState.signUp));
+    await dispatch(asyncSignUpThunk(newAuthState.signUp));
     dispatchNewAuth(newAuthSlice.actions.resetNewAuthSignUp());
     router.refresh();
   }, [dispatch, newAuthState.signUp, router]);
 
   const handleSignOut = React.useCallback(async () => {
-    await dispatch(asyncLoginThunk(newAuthState.signUp));
+    await dispatch(asyncSignOutThunk());
     dispatchNewAuth(newAuthSlice.actions.resetNewAuthLogin());
     dispatchNewAuth(newAuthSlice.actions.resetNewAuthSignUp());
     router.replace('/login');
-  }, [dispatch, newAuthState.signUp, router]);
+  }, [dispatch, router]);
 
   const handleKeyEnterLogin: React.KeyboardEventHandler<HTMLInputElement> =
     React.useCallback(
