@@ -75,6 +75,7 @@ const authSlice = createSlice({
     builder.addMatcher(
       (action: PayloadAction) => action.type.endsWith('/pending'),
       (state) => {
+        state.error = null;
         state.loading = true;
       }
     );

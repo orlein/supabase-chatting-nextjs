@@ -164,6 +164,7 @@ const messageSlice = createSlice({
       (action: PayloadAction) => action.type.endsWith('/pending'),
       (state) => {
         state.loading = true;
+        state.error = null;
       }
     );
     builder.addMatcher(
