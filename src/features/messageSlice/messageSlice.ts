@@ -3,6 +3,7 @@ import {
   CreateMessageParams,
   ReadMessagesParams,
   createMessage,
+  deleteMessage,
   readMessages,
 } from '@/features/messageSlice/messageApi';
 import { readUser } from '@/features/messageSlice/userApi';
@@ -104,6 +105,21 @@ export const asyncCreateMessageThunk = createAppAsyncThunk(
       user_id,
     });
     return { channel_id, message: newMessage };
+  }
+);
+
+export const asyncDeleteMessageThunk = createAppAsyncThunk(
+  'message/asyncDeleteMessageThunk',
+  async (params: { message_id: number; channel_id: number }, thunkAPI) => {
+    const { session } = thunkAPI.getState().auth;
+    if (!session?.user) {
+      throw new Error('User not logged in');
+    }
+
+    await deleteMessage({
+      message_id: params.message_id,
+      channel_id: params.channel_id,
+    });
   }
 );
 

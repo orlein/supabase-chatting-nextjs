@@ -57,7 +57,7 @@ export async function createMessage(params: CreateMessageParams) {
 
 type UpdateMessageParams = {
   channel_id: number;
-  message_id: string;
+  message_id: number;
   message: string;
 };
 
@@ -80,7 +80,7 @@ export async function updateMessage(params: UpdateMessageParams) {
 
 type DeleteMessageParams = {
   channel_id: number;
-  message_id: string;
+  message_id: number;
 };
 
 async function supabaseDeleteMessage(params: DeleteMessageParams) {

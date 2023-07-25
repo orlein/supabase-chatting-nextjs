@@ -11,8 +11,8 @@ export default function SingleChannelPage(props: SingleChannelPageProps) {
   useAuthGuard();
 
   return (
-    <div>
+    <>
       <ChannelMessageList channel_id={props.params.id} />
-    </div>
+    </>
   );
 }

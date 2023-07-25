@@ -5,6 +5,7 @@ import useMessageSlice from '@/features/messageSlice/useMessageSlice';
 import useAuthGuard from '@/hooks/useAuthGuard';
 import { useRouter } from 'next/navigation';
 import styles from './ChannelMessageList.module.css';
+import useAuthSlice from '@/features/authSlice/useAuthSlice';
 
 type ChannelMessageListProps = {
   channel_id: number;
@@ -21,11 +22,25 @@ export default function ChannelMessageList(props: ChannelMessageListProps) {
       handleClickCreateNewMessage,
     },
   } = useMessageSlice(props);
+
+  const {
+    authState: { isAdmin, isModerator },
+  } = useAuthSlice();
+
   return (
-    <div>
+    <div style={{ display: 'flex', flex: 1, flexDirection: 'column' }}>
       <button onClick={() => router.back()}>back</button>
       <p>{error}</p>
       <h1>Channel Message List</h1>
+      <div className={styles.list}>
+        {channelMessages.map((message) => (
+          <SingleChannelMessage
+            key={message.id}
+            {...message}
+            isDeleteEnabled={isAdmin || isModerator}
+          />
+        ))}
+      </div>
       <input
         type="text"
         value={message}
@@ -33,11 +48,6 @@ export default function ChannelMessageList(props: ChannelMessageListProps) {
         onKeyDown={handleEnterCreateNewMessage}
       />
       <button onClick={handleClickCreateNewMessage}>add message</button>
-      <div className={styles.list}>
-        {channelMessages.map((message) => (
-          <SingleChannelMessage key={message.id} {...message} />
-        ))}
-      </div>
     </div>
   );
 }
