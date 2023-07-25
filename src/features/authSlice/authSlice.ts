@@ -2,6 +2,7 @@ import {
   LoginParams,
   SignUpParams,
   login,
+  readUserRoles,
   signOut,
   signUp,
 } from '@/features/authSlice/authApi';
@@ -14,18 +15,21 @@ export type AuthState = {
   session: Session | null;
   loading: boolean;
   error: string | null;
+  userRole: 'admin' | 'moderator' | null;
 };
 
 const initialAuthState: AuthState = {
   session: null,
   loading: false,
   error: null,
+  userRole: null,
 };
 
 export const asyncLoginThunk = createAppAsyncThunk(
   'auth/asyncLoginThunk',
-  async (params: LoginParams) => {
+  async (params: LoginParams, thunkAPI) => {
     const data = await login(params);
+    thunkAPI.dispatch(asyncReadUserRoleThunk());
     return data;
   }
 );
@@ -42,6 +46,14 @@ export const asyncSignOutThunk = createAppAsyncThunk(
   'auth/asyncSignOutThunk',
   async () => {
     await signOut();
+  }
+);
+
+export const asyncReadUserRoleThunk = createAppAsyncThunk(
+  'auth/asyncReadUserRoleThunk',
+  async () => {
+    const data = await readUserRoles();
+    return data;
   }
 );
 
@@ -65,6 +77,15 @@ const authSlice = createSlice({
     builder.addCase(asyncSignOutThunk.fulfilled, (state) => {
       state.loading = false;
       state.session = null;
+    });
+    builder.addCase(asyncReadUserRoleThunk.fulfilled, (state, action) => {
+      state.loading = false;
+      const userRoleIndex = action.payload.findIndex(
+        (v) => v.user_id === state.session?.user.id
+      );
+      if (userRoleIndex > -1) {
+        state.userRole = action.payload[userRoleIndex].role;
+      }
     });
     builder.addMatcher(
       (action: PayloadAction) => action.type.endsWith('/fulfilled'),

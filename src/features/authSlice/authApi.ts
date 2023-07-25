@@ -66,3 +66,41 @@ export async function signOut() {
 
   throw new Error('Unsupported backend type');
 }
+
+async function supabaseReadUserRoles() {
+  const { data, error } = await supabaseBackend.instance
+    .from('user_roles')
+    .select('*');
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+}
+
+export async function readUserRoles() {
+  if (getBackendInstance().type === 'supabase') {
+    return supabaseReadUserRoles();
+  }
+
+  throw new Error('Unsupported backend type');
+}
+
+async function supabaseReadUserAuth() {
+  const { data, error } = await supabaseBackend.instance.auth.getUser();
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+}
+
+export async function readUserAuth() {
+  if (getBackendInstance().type === 'supabase') {
+    return supabaseReadUserAuth();
+  }
+
+  throw new Error('Unsupported backend type');
+}

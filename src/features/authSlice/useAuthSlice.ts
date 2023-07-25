@@ -185,6 +185,7 @@ export default function useAuthSlice() {
     authState: {
       ...state,
       isLogin: Boolean(state.session),
+      isAdmin: Boolean(state.userRole === 'admin'),
       handleLogin,
       handleSignUp,
       handleSignOut,
