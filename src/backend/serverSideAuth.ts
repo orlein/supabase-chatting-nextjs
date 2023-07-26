@@ -16,6 +16,6 @@ export default async function serverSideAuth() {
   } = await supabase.auth.getSession();
 
   if (!session) {
-    redirect('/login');
+    redirect('/sign-in');
   }
 }

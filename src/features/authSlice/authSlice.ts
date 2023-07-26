@@ -1,7 +1,7 @@
 import {
-  LoginParams,
+  SignInParams,
   SignUpParams,
-  login,
+  signIn,
   readUserRoles,
   signOut,
   signUp,
@@ -25,10 +25,10 @@ const initialAuthState: AuthState = {
   userRole: null,
 };
 
-export const asyncLoginThunk = createAppAsyncThunk(
-  'auth/asyncLoginThunk',
-  async (params: LoginParams, thunkAPI) => {
-    const data = await login(params);
+export const asyncSignInThunk = createAppAsyncThunk(
+  'auth/asyncSignInThunk',
+  async (params: SignInParams, thunkAPI) => {
+    const data = await signIn(params);
     thunkAPI.dispatch(asyncReadUserRoleThunk());
     return data;
   }
@@ -66,7 +66,7 @@ const authSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(asyncLoginThunk.fulfilled, (state, action) => {
+    builder.addCase(asyncSignInThunk.fulfilled, (state, action) => {
       state.loading = false;
       state.session = action.payload.session;
     });

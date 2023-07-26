@@ -1,11 +1,11 @@
 import getBackendInstance, { supabaseBackend } from '@/backend/backendInstance';
 
-export type LoginParams = {
+export type SignInParams = {
   email: string;
   password: string;
 };
 
-async function supabaseLogin(params: LoginParams) {
+async function supabaseSignIn(params: SignInParams) {
   const { email, password } = params;
   const { data, error } =
     await supabaseBackend.instance.auth.signInWithPassword({
@@ -20,9 +20,9 @@ async function supabaseLogin(params: LoginParams) {
   return data;
 }
 
-export async function login(params: LoginParams) {
+export async function signIn(params: SignInParams) {
   if (getBackendInstance().type === 'supabase') {
-    return supabaseLogin(params);
+    return supabaseSignIn(params);
   }
 
   throw new Error('Unsupported backend type');

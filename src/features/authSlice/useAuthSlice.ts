@@ -1,6 +1,6 @@
 import { emailRegex } from '@/common/utils/format';
 import {
-  asyncLoginThunk,
+  asyncSignInThunk,
   asyncSignOutThunk,
   asyncSignUpThunk,
   selectAuth,
@@ -12,7 +12,7 @@ import { useRouter } from 'next/navigation';
 import React from 'react';
 
 export type NewAuthState = {
-  login: {
+  signIn: {
     email: string;
     password: string;
     error: string | null;
@@ -25,7 +25,7 @@ export type NewAuthState = {
 };
 
 const initialNewAuthState: NewAuthState = {
-  login: {
+  signIn: {
     email: '',
     password: '',
     error: null,
@@ -41,26 +41,26 @@ const newAuthSlice = createSlice({
   name: 'newAuth',
   initialState: initialNewAuthState,
   reducers: {
-    changeNewAuthLoginEmail: (state, action: PayloadAction<string>) => {
+    changeNewAuthSignInEmail: (state, action: PayloadAction<string>) => {
       if (action.payload.length === 0) {
-        state.login.error = 'Email must not be empty';
+        state.signIn.error = 'Email must not be empty';
         return;
       }
 
       if (!emailRegex.test(action.payload)) {
-        state.login.error = 'Email format is invalid';
+        state.signIn.error = 'Email format is invalid';
         return;
       }
 
-      state.login.email = action.payload;
+      state.signIn.email = action.payload;
     },
-    changeNewAuthLoginPassword: (state, action: PayloadAction<string>) => {
+    changeNewAuthSignInPassword: (state, action: PayloadAction<string>) => {
       if (action.payload.length === 0) {
-        state.login.error = 'Password must not be empty';
+        state.signIn.error = 'Password must not be empty';
         return;
       }
 
-      state.login.password = action.payload;
+      state.signIn.password = action.payload;
     },
     changeNewAuthSignUpEmail: (state, action: PayloadAction<string>) => {
       if (action.payload.length === 0) {
@@ -83,8 +83,8 @@ const newAuthSlice = createSlice({
 
       state.signUp.password = action.payload;
     },
-    resetNewAuthLogin: (state) => {
-      state.login = initialNewAuthState.login;
+    resetNewAuthSignIn: (state) => {
+      state.signIn = initialNewAuthState.signIn;
     },
     resetNewAuthSignUp: (state) => {
       state.signUp = initialNewAuthState.signUp;
@@ -102,17 +102,17 @@ export default function useAuthSlice() {
     initialNewAuthState
   );
 
-  const handleChangeNewAuthLoginEmail: React.ChangeEventHandler<HTMLInputElement> =
+  const handleChangeNewAuthSignInEmail: React.ChangeEventHandler<HTMLInputElement> =
     React.useCallback((event) => {
       dispatchNewAuth(
-        newAuthSlice.actions.changeNewAuthLoginEmail(event.target.value)
+        newAuthSlice.actions.changeNewAuthSignInEmail(event.target.value)
       );
     }, []);
 
-  const handleChangeNewAuthLoginPassword: React.ChangeEventHandler<HTMLInputElement> =
+  const handleChangeNewAuthSignInPassword: React.ChangeEventHandler<HTMLInputElement> =
     React.useCallback((event) => {
       dispatchNewAuth(
-        newAuthSlice.actions.changeNewAuthLoginPassword(event.target.value)
+        newAuthSlice.actions.changeNewAuthSignInPassword(event.target.value)
       );
     }, []);
 
@@ -130,11 +130,11 @@ export default function useAuthSlice() {
       );
     }, []);
 
-  const handleLogin = React.useCallback(async () => {
-    await dispatch(asyncLoginThunk(newAuthState.login));
-    dispatchNewAuth(newAuthSlice.actions.resetNewAuthLogin());
+  const handleSignIn = React.useCallback(async () => {
+    await dispatch(asyncSignInThunk(newAuthState.signIn));
+    dispatchNewAuth(newAuthSlice.actions.resetNewAuthSignIn());
     router.push('/');
-  }, [dispatch, newAuthState.login, router]);
+  }, [dispatch, newAuthState.signIn, router]);
 
   const handleSignUp = React.useCallback(async () => {
     await dispatch(asyncSignUpThunk(newAuthState.signUp));
@@ -144,52 +144,30 @@ export default function useAuthSlice() {
 
   const handleSignOut = React.useCallback(async () => {
     await dispatch(asyncSignOutThunk());
-    dispatchNewAuth(newAuthSlice.actions.resetNewAuthLogin());
+    dispatchNewAuth(newAuthSlice.actions.resetNewAuthSignIn());
     dispatchNewAuth(newAuthSlice.actions.resetNewAuthSignUp());
-    router.replace('/login');
+    router.replace('/sign-in');
   }, [dispatch, router]);
-
-  const handleKeyEnterLogin: React.KeyboardEventHandler<HTMLInputElement> =
-    React.useCallback(
-      (event) => {
-        if (event.key === 'Enter') {
-          handleLogin();
-        }
-      },
-      [handleLogin]
-    );
-
-  const handleKeyEnterSignUp: React.KeyboardEventHandler<HTMLInputElement> =
-    React.useCallback(
-      (event) => {
-        if (event.key === 'Enter') {
-          handleSignUp();
-        }
-      },
-      [handleSignUp]
-    );
 
   return {
     authState: {
       ...state,
-      isLogin: Boolean(state.session),
+      isSignIn: Boolean(state.session),
       isAdmin: Boolean(state.userRole === 'admin'),
       isModerator: Boolean(state.userRole === 'moderator'),
-      handleLogin,
+      handleSignIn,
       handleSignUp,
       handleSignOut,
     },
-    loginState: {
-      ...newAuthState.login,
-      handleChangeNewAuthLoginEmail,
-      handleChangeNewAuthLoginPassword,
-      handleKeyEnterLogin,
+    signInState: {
+      ...newAuthState.signIn,
+      handleChangeNewAuthSignInEmail,
+      handleChangeNewAuthSignInPassword,
     },
     signUpState: {
       ...newAuthState.signUp,
       handleChangeNewAuthSignUpEmail,
       handleChangeNewAuthSignUpPassword,
-      handleKeyEnterSignUp,
     },
   };
 }
