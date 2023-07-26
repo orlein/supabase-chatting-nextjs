@@ -2,12 +2,13 @@
 import FullPageLoading from '@/common/components/misc/FullPageLoading';
 import useAuthSlice from '@/features/authSlice/useAuthSlice';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import { Link } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Link from '@mui/material/Link';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import NextLink from 'next/link';
 import React from 'react';
 
 export default function SignInPage() {
@@ -95,7 +96,7 @@ export default function SignInPage() {
           {error}
         </Typography>
       )}
-      <Link href="/sign-up" variant="body2">
+      <Link href="/sign-up" variant="body2" component={NextLink}>
         {"Don't have an account? Sign Up"}
       </Link>
     </Box>

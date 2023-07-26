@@ -6,6 +6,7 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
+import Link from 'next/link';
 
 export type ChannelListProps = {
   open: boolean;
@@ -25,7 +26,7 @@ export default function ChannelList(props: ChannelListProps) {
               justifyContent: props.open ? 'initial' : 'center',
               px: 2.5,
             }}
-            LinkComponent={'a'}
+            LinkComponent={Link}
             href={`/c/${channel.id}`}
           >
             <ListItemText

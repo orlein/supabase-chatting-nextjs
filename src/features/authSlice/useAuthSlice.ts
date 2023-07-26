@@ -8,6 +8,7 @@ import {
 import useAppDispatch from '@/hooks/useAppDispatch';
 import useAppSelector from '@/hooks/useAppSelector';
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { useRouter } from 'next/navigation';
 import React from 'react';
 
 export type NewAuthState = {
@@ -52,6 +53,7 @@ const newAuthSlice = createSlice({
       }
 
       state.signIn.email = action.payload;
+      state.signIn.error = null;
     },
     changeNewAuthSignInPassword: (state, action: PayloadAction<string>) => {
       if (action.payload.length === 0) {
@@ -73,6 +75,7 @@ const newAuthSlice = createSlice({
       }
 
       state.signUp.email = action.payload;
+      state.signUp.error = null;
     },
     changeNewAuthSignUpPassword: (state, action: PayloadAction<string>) => {
       if (action.payload.length === 0) {
@@ -94,6 +97,7 @@ const newAuthSlice = createSlice({
 export default function useAuthSlice() {
   const dispatch = useAppDispatch();
   const state = useAppSelector(selectAuth);
+  const router = useRouter();
 
   const [newAuthState, dispatchNewAuth] = React.useReducer(
     newAuthSlice.reducer,
@@ -131,18 +135,21 @@ export default function useAuthSlice() {
   const handleSignIn = React.useCallback(async () => {
     await dispatch(asyncSignInThunk(newAuthState.signIn));
     dispatchNewAuth(newAuthSlice.actions.resetNewAuthSignIn());
-  }, [dispatch, newAuthState.signIn]);
+    router.push('/');
+  }, [dispatch, newAuthState.signIn, router]);
 
   const handleSignUp = React.useCallback(async () => {
     await dispatch(asyncSignUpThunk(newAuthState.signUp));
     dispatchNewAuth(newAuthSlice.actions.resetNewAuthSignUp());
-  }, [dispatch, newAuthState.signUp]);
+    router.push('/');
+  }, [dispatch, newAuthState.signUp, router]);
 
   const handleSignOut = React.useCallback(async () => {
     await dispatch(asyncSignOutThunk());
     dispatchNewAuth(newAuthSlice.actions.resetNewAuthSignIn());
     dispatchNewAuth(newAuthSlice.actions.resetNewAuthSignUp());
-  }, [dispatch]);
+    router.push('/sign-in');
+  }, [dispatch, router]);
 
   return {
     authState: {
