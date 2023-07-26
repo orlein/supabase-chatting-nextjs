@@ -22,7 +22,7 @@ const initialChannelState: ChannelState = {
 };
 
 export const asyncReadChannelsThunk = createAppAsyncThunk(
-  'channel/asyncSetChannelThunk',
+  'channel/asyncReadChannelsThunk',
   async (params?: ReadChannelsParams) => {
     const channels = await readChannels(params);
     return channels;

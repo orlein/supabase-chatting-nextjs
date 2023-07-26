@@ -8,7 +8,6 @@ import {
 import useAppDispatch from '@/hooks/useAppDispatch';
 import useAppSelector from '@/hooks/useAppSelector';
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-import { useRouter } from 'next/navigation';
 import React from 'react';
 
 export type NewAuthState = {
@@ -95,7 +94,6 @@ const newAuthSlice = createSlice({
 export default function useAuthSlice() {
   const dispatch = useAppDispatch();
   const state = useAppSelector(selectAuth);
-  const router = useRouter();
 
   const [newAuthState, dispatchNewAuth] = React.useReducer(
     newAuthSlice.reducer,
@@ -133,21 +131,18 @@ export default function useAuthSlice() {
   const handleSignIn = React.useCallback(async () => {
     await dispatch(asyncSignInThunk(newAuthState.signIn));
     dispatchNewAuth(newAuthSlice.actions.resetNewAuthSignIn());
-    router.push('/');
-  }, [dispatch, newAuthState.signIn, router]);
+  }, [dispatch, newAuthState.signIn]);
 
   const handleSignUp = React.useCallback(async () => {
     await dispatch(asyncSignUpThunk(newAuthState.signUp));
     dispatchNewAuth(newAuthSlice.actions.resetNewAuthSignUp());
-    router.refresh();
-  }, [dispatch, newAuthState.signUp, router]);
+  }, [dispatch, newAuthState.signUp]);
 
   const handleSignOut = React.useCallback(async () => {
     await dispatch(asyncSignOutThunk());
     dispatchNewAuth(newAuthSlice.actions.resetNewAuthSignIn());
     dispatchNewAuth(newAuthSlice.actions.resetNewAuthSignUp());
-    router.replace('/sign-in');
-  }, [dispatch, router]);
+  }, [dispatch]);
 
   return {
     authState: {

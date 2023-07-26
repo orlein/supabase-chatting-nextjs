@@ -6,8 +6,6 @@ import { Link } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import React from 'react';
@@ -45,7 +43,15 @@ export default function SignInPage() {
       <Typography component="h1" variant="h5">
         Sign in
       </Typography>
-      <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
+      <Box
+        component="form"
+        noValidate
+        onSubmit={handleSubmit}
+        sx={{
+          mt: 1,
+          flex: 1,
+        }}
+      >
         <TextField
           margin="normal"
           required
@@ -68,12 +74,6 @@ export default function SignInPage() {
           autoComplete="current-password"
           onChange={signInState.handleChangeNewAuthSignInPassword}
         />
-
-        <FormControlLabel
-          control={<Checkbox value="remember" color="primary" />}
-          label="Remember me"
-        />
-
         <Box
           sx={{
             display: 'flex',

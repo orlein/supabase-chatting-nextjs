@@ -13,7 +13,7 @@ import React from 'react';
 export default function SignUpPage() {
   const {
     signUpState,
-    authState: { handleSignUp, loading },
+    authState: { handleSignUp, loading, error },
   } = useAuthSlice();
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> =
@@ -44,7 +44,15 @@ export default function SignUpPage() {
       <Typography component="h1" variant="h5">
         Sign up
       </Typography>
-      <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
+      <Box
+        component="form"
+        noValidate
+        onSubmit={handleSubmit}
+        sx={{
+          mt: 1,
+          flex: 1,
+        }}
+      >
         <TextField
           margin="normal"
           required
@@ -67,11 +75,7 @@ export default function SignUpPage() {
           autoComplete="current-password"
           onChange={signUpState.handleChangeNewAuthSignUpPassword}
         />
-        {signUpState.error && (
-          <Typography variant="caption" color="error">
-            {signUpState.error}
-          </Typography>
-        )}
+
         <Box
           sx={{
             display: 'flex',
@@ -83,6 +87,16 @@ export default function SignUpPage() {
           </Button>
         </Box>
       </Box>
+      {signUpState.error && (
+        <Typography variant="caption" color="error">
+          {signUpState.error}
+        </Typography>
+      )}
+      {error && (
+        <Typography variant="caption" color="error">
+          {error}
+        </Typography>
+      )}
       <Link href="/sign-in" variant="body2">
         {'Already have an account? Sign in'}
       </Link>
