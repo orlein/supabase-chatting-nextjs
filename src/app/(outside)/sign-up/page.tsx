@@ -1,30 +1,91 @@
 'use client';
-
+import FullPageLoading from '@/common/components/misc/FullPageLoading';
 import useAuthSlice from '@/features/authSlice/useAuthSlice';
-import { useRouter } from 'next/navigation';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import { Link } from '@mui/material';
+import Avatar from '@mui/material/Avatar';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import React from 'react';
 
 export default function SignUpPage() {
-  const { signUpState, authState } = useAuthSlice();
-  const router = useRouter();
+  const {
+    signUpState,
+    authState: { handleSignUp, loading },
+  } = useAuthSlice();
+
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> =
+    React.useCallback(
+      (event) => {
+        event.preventDefault();
+        handleSignUp();
+      },
+      [handleSignUp]
+    );
+
+  if (loading) {
+    return <FullPageLoading />;
+  }
 
   return (
-    <div>
-      <h1>Sign Up Form</h1>
-      <p>Email</p>
-      <input
-        type="email"
-        onChange={signUpState.handleChangeNewAuthSignUpEmail}
-      />
-      <p>Password</p>
-      <input
-        type="password"
-        onChange={signUpState.handleChangeNewAuthSignUpPassword}
-        onKeyDown={signUpState.handleKeyEnterSignUp}
-      />
-      <p />
-      <button onClick={authState.handleSignUp}>Sign Up</button>
-      <button onClick={() => router.back()}>Back</button>
-      <p>{authState.error}</p>
-    </div>
+    <Box
+      sx={{
+        marginTop: 8,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+      }}
+    >
+      <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+        <LockOutlinedIcon />
+      </Avatar>
+      <Typography component="h1" variant="h5">
+        Sign up
+      </Typography>
+      <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
+        <TextField
+          margin="normal"
+          required
+          fullWidth
+          id="email"
+          label="Email Address"
+          name="email"
+          autoComplete="email"
+          autoFocus
+          onChange={signUpState.handleChangeNewAuthSignUpEmail}
+        />
+        <TextField
+          margin="normal"
+          required
+          fullWidth
+          name="password"
+          label="Password"
+          type="password"
+          id="password"
+          autoComplete="current-password"
+          onChange={signUpState.handleChangeNewAuthSignUpPassword}
+        />
+        {signUpState.error && (
+          <Typography variant="caption" color="error">
+            {signUpState.error}
+          </Typography>
+        )}
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+          }}
+        >
+          <Button type="submit" variant="contained" sx={{ mt: 3, mb: 2 }}>
+            Sign Up
+          </Button>
+        </Box>
+      </Box>
+      <Link href="/sign-in" variant="body2">
+        {'Already have an account? Sign in'}
+      </Link>
+    </Box>
   );
 }

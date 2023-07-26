@@ -1,9 +1,8 @@
-import styles from './OutsideLayout.module.css';
+'use client';
+import useAuthListener from '@/features/authSlice/useAuthListener';
+import Container from '@mui/material/Container';
 
 export default function OutsideLayout(props: React.PropsWithChildren) {
-  return (
-    <section className={styles.container}>
-      <main className={styles.main}>{props.children}</main>
-    </section>
-  );
+  useAuthListener();
+  return <Container component={'main'}>{props.children}</Container>;
 }

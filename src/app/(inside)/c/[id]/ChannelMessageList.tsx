@@ -1,17 +1,15 @@
 'use client';
 
 import SingleChannelMessage from '@/app/(inside)/c/[id]/SingleChannelMessage';
+import useAuthSlice from '@/features/authSlice/useAuthSlice';
 import useMessageSlice from '@/features/messageSlice/useMessageSlice';
-import useAuthGuard from '@/hooks/useAuthGuard';
 import { useRouter } from 'next/navigation';
 import styles from './ChannelMessageList.module.css';
-import useAuthSlice from '@/features/authSlice/useAuthSlice';
 
 type ChannelMessageListProps = {
   channel_id: number;
 };
 export default function ChannelMessageList(props: ChannelMessageListProps) {
-  useAuthGuard();
   const router = useRouter();
   const {
     messageState: { channelMessages, error },

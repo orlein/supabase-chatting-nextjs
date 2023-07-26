@@ -1,15 +1,11 @@
-import ChannelList from '@/common/components/ChannelList';
-import styles from './InsideLayout.module.css';
+'use client';
+import MiniDrawer from '@/common/components/layouts/MiniDrawer';
+import useAuthListener from '@/features/authSlice/useAuthListener';
+import useAuthGuard from '@/hooks/useAuthGuard';
 
 export default function InsideLayout(props: React.PropsWithChildren) {
-  return (
-    <main className={styles.main}>
-      <section className={styles.leftNavSection} aria-label="left nav bar">
-        <ChannelList />
-      </section>
-      <section className={styles.userZone} aria-label="user zone">
-        {props.children}
-      </section>
-    </main>
-  );
+  useAuthListener();
+  useAuthGuard();
+
+  return <MiniDrawer>{props.children}</MiniDrawer>;
 }
