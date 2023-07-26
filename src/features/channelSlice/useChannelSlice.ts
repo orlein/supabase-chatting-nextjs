@@ -1,12 +1,7 @@
 import {
   asyncCreateChannelThunk,
-  asyncReadChannelsThunk,
-  createChannelAction,
-  deleteChannelAction,
   selectChannel,
-  updateChannelAction,
 } from '@/features/channelSlice/channelSlice';
-import { listenChannel } from '@/features/channelSlice/channelSocket';
 import useAppDispatch from '@/hooks/useAppDispatch';
 import useAppSelector from '@/hooks/useAppSelector';
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
@@ -53,28 +48,6 @@ export default function useChannelSlice() {
     newChannelSlice.reducer,
     initialNewChannelState
   );
-
-  React.useEffect(() => {
-    dispatch(asyncReadChannelsThunk({}));
-  }, [dispatch]);
-
-  React.useEffect(() => {
-    const sub = listenChannel(
-      (payload) => {
-        dispatch(createChannelAction(payload));
-      },
-      (payload) => {
-        dispatch(updateChannelAction(payload));
-      },
-      (payload) => {
-        dispatch(deleteChannelAction(payload));
-      }
-    ).subscribe();
-
-    return () => {
-      sub.unsubscribe();
-    };
-  }, [dispatch]);
 
   const handleChangeNewChannelName: React.ChangeEventHandler<HTMLInputElement> =
     React.useCallback((e) => {

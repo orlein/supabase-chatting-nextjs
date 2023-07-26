@@ -4,9 +4,7 @@ import {
   asyncSignOutThunk,
   asyncSignUpThunk,
   selectAuth,
-  setSessionAction,
 } from '@/features/authSlice/authSlice';
-import { listenAuthSession } from '@/features/authSlice/authSocket';
 import useAppDispatch from '@/hooks/useAppDispatch';
 import useAppSelector from '@/hooks/useAppSelector';
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
@@ -103,16 +101,6 @@ export default function useAuthSlice() {
     newAuthSlice.reducer,
     initialNewAuthState
   );
-
-  React.useEffect(() => {
-    const sub = listenAuthSession((_event, session) => {
-      dispatch(setSessionAction(session));
-    });
-
-    return () => {
-      sub.unsubscribe();
-    };
-  }, [dispatch]);
 
   const handleChangeNewAuthLoginEmail: React.ChangeEventHandler<HTMLInputElement> =
     React.useCallback((event) => {
