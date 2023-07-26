@@ -22,7 +22,6 @@ export default function useAuthGuard() {
   }, []);
 
   React.useEffect(() => {
-    console.log({ isLoading }, { isSignIn });
     if (!isLoading && !isSignIn) {
       router.push('/sign-in');
     }
