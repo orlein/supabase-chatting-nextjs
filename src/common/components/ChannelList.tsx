@@ -1,25 +1,40 @@
 'use client';
 
+import useChannelListener from '@/features/channelSlice/useChannelListener';
 import useChannelSlice from '@/features/channelSlice/useChannelSlice';
-import Link from 'next/link';
-import styles from './ChannelList.module.css';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText from '@mui/material/ListItemText';
+
 export type ChannelListProps = {
-  isDeleteEnabled?: boolean;
+  open: boolean;
 };
 
 export default function ChannelList(props: ChannelListProps) {
+  useChannelListener();
   const { channelState } = useChannelSlice();
 
   return (
-    <nav className={styles.vertical}>
-      <ul>
-        {channelState.channels.map((channel) => (
-          <li key={channel.id}>
-            <Link href={`/c/${channel.id}`}>{channel.slug}</Link>
-            {props.isDeleteEnabled && <button>delete</button>}
-          </li>
-        ))}
-      </ul>
-    </nav>
+    <List>
+      {channelState.channels.map((channel) => (
+        <ListItem key={channel.id} disablePadding sx={{ display: 'block' }}>
+          <ListItemButton
+            sx={{
+              minHeight: 48,
+              justifyContent: props.open ? 'initial' : 'center',
+              px: 2.5,
+            }}
+            LinkComponent={'a'}
+            href={`/c/${channel.id}`}
+          >
+            <ListItemText
+              primary={channel.slug}
+              sx={{ opacity: props.open ? 1 : 0 }}
+            />
+          </ListItemButton>
+        </ListItem>
+      ))}
+    </List>
   );
 }
