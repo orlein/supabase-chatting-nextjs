@@ -5,19 +5,26 @@ import React from 'react';
 export default function useAuthGuard() {
   const router = useRouter();
   const [isLoading, setIsLoading] = React.useState<boolean>(true);
-  const [isLogin, setIsLogin] = React.useState<boolean>(false);
+  const [isSignIn, setIsSignIn] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     setIsLoading(true);
-    readUserAuth().then((data) => {
-      setIsLogin(!!data);
-      setIsLoading(false);
-    });
+    readUserAuth()
+      .then((data) => {
+        setIsSignIn(!!data);
+      })
+      .catch(() => {
+        setIsSignIn(false);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   }, []);
 
   React.useEffect(() => {
-    if (!isLoading && !isLogin) {
-      router.push('/login');
+    console.log({ isLoading }, { isSignIn });
+    if (!isLoading && !isSignIn) {
+      router.push('/sign-in');
     }
-  }, [isLoading, isLogin, router]);
+  }, [isLoading, isSignIn, router]);
 }
