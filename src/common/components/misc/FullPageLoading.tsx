@@ -6,11 +6,15 @@ export default function FullPageLoading() {
     <Box
       sx={{
         position: 'fixed',
-        height: '100vh',
-        width: '100vw',
+        height: '100%',
+        width: '100%',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
+        left: 0,
+        top: 0,
+        zIndex: 9999,
+        backgroundColor: 'rgba(0,0,0,0.5)',
       }}
     >
       <CircularProgress />
