@@ -69,7 +69,7 @@ export default function useChannelSlice() {
   const handleKeyEnterCreateChannel: React.KeyboardEventHandler<HTMLInputElement> =
     React.useCallback(
       (e) => {
-        if (e.key === 'Enter') {
+        if (e.key === 'Enter' && e.nativeEvent.isComposing === false) {
           dispatch(asyncCreateChannelThunk({ slug: newChannelState.name }));
           dispatchNewChannel(newChannelSlice.actions.resetNewChannel());
         }

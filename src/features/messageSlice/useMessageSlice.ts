@@ -61,7 +61,7 @@ export default function useMessageSlice(props: { channel_id: number }) {
   const handleEnterCreateNewMessage: React.KeyboardEventHandler<HTMLInputElement> =
     React.useCallback(
       (e) => {
-        if (e.key === 'Enter') {
+        if (e.key === 'Enter' && e.nativeEvent.isComposing === false) {
           dispatch(
             asyncCreateMessageThunk({
               channel_id: props.channel_id,
