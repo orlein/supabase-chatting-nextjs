@@ -1,8 +1,12 @@
-'use client';
-
-import { appStore } from '@/redux/store';
-import { Provider } from 'react-redux';
+"use client";
+import ThemeRegistry from "@/common/ThemeRegistry/ThemeRegistry";
+import { appStore } from "@/redux/store";
+import { Provider } from "react-redux";
 
 export default function Providers(props: React.PropsWithChildren) {
-  return <Provider store={appStore}>{props.children}</Provider>;
+  return (
+    <ThemeRegistry>
+      <Provider store={appStore}>{props.children}</Provider>
+    </ThemeRegistry>
+  );
 }
