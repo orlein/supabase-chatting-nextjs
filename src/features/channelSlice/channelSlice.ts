@@ -5,6 +5,7 @@ import {
   createChannel,
   readChannels,
 } from '@/features/channelSlice/channelApi';
+import { initializeChannelAction } from '@/features/messageSlice/messageSlice';
 import createAppAsyncThunk from '@/features/redux/createAppAsyncThunk';
 import { RootState } from '@/redux/store';
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
@@ -23,8 +24,13 @@ const initialChannelState: ChannelState = {
 
 export const asyncReadChannelsThunk = createAppAsyncThunk(
   'channel/asyncReadChannelsThunk',
-  async (params: ReadChannelsParams) => {
+  async (params: ReadChannelsParams, thunkAPI) => {
     const channels = await readChannels(params);
+    thunkAPI.dispatch(
+      initializeChannelAction({
+        channel_id_array: channels.map((channel) => channel.id),
+      })
+    );
     return channels;
   }
 );

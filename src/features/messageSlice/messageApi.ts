@@ -17,7 +17,7 @@ async function supabaseReadMessages(params: ReadMessagesParams) {
     .from('messages')
     .select(`*, author:user_id(*)`)
     .eq('channel_id', params.channel_id)
-    .order('inserted_at', { ascending: true })
+    .order('inserted_at', { ascending: false })
     .range(...getFromToRange(page, page_size));
 
   return validatePaginated(result?.data);

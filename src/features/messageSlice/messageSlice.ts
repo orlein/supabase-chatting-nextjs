@@ -76,35 +76,31 @@ export const asyncCreateMessageThunk = createAppAsyncThunk(
     const user_id = session.user.id;
     const channel_id = Number(params.channel_id);
 
-    const lastMessage = thunkAPI.getState().message.messages[channel_id].reduce(
-      (acc, message) => {
-        if (message.id > acc.id) {
-          return message;
-        }
-        return acc;
-      },
-      { id: -1 }
-    );
+    // const lastMessage =
+    //   thunkAPI.getState().message.messages[channel_id][
+    //     thunkAPI.getState().message.messages[channel_id].length - 1
+    //   ];
 
-    const newMessage: Message = {
-      id: lastMessage.id + 1,
-      channel_id,
-      message: params.message,
-      inserted_at: new Date().toISOString(),
-      user_id,
-      isPending: true,
-    };
-    thunkAPI.dispatch(
-      messageSlice.actions.createMessageAction({
-        channel_id,
-        message: newMessage,
-      })
-    );
+    // const newMessage: Message = {
+    //   id: Number(lastMessage.id) + 1,
+    //   channel_id,
+    //   message: params.message,
+    //   inserted_at: new Date().toISOString(),
+    //   user_id,
+    //   isPending: true,
+    // };
+    // thunkAPI.dispatch(
+    //   messageSlice.actions.createMessageAction({
+    //     channel_id,
+    //     message: newMessage,
+    //   })
+    // );
     await createMessage({
       ...params,
       user_id,
     });
-    return { channel_id, message: newMessage };
+    // return { channel_id, message: newMessage };
+    return { channel_id };
   }
 );
 
@@ -128,7 +124,7 @@ export const asyncAddUserThunk = createAppAsyncThunk(
   async (params: { channel_id: number; user_id: string }, thunkAPI) => {
     const userIndex = thunkAPI
       .getState()
-      .message.users[params.channel_id].findIndex(
+      .message.users[params.channel_id]?.findIndex(
         (user) => user.id === params.user_id
       );
 
@@ -157,6 +153,17 @@ const messageSlice = createSlice({
   name: 'message',
   initialState: initialMessageState,
   reducers: {
+    initializeChannelAction: (
+      state,
+      action: PayloadAction<{
+        channel_id_array: number[];
+      }>
+    ) => {
+      action.payload.channel_id_array.forEach((channel_id) => {
+        state.messages[channel_id] = [];
+        state.users[channel_id] = [];
+      });
+    },
     createMessageAction: (
       state,
       action: PayloadAction<{
@@ -172,7 +179,7 @@ const messageSlice = createSlice({
         return;
       }
 
-      state.messages[action.payload.channel_id].push({
+      state.messages[action.payload.channel_id].unshift({
         ...action.payload.message,
         author: state.users[action.payload.channel_id][authorIndex],
       });
@@ -239,29 +246,31 @@ const messageSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(asyncCreateMessageThunk.fulfilled, (state, action) => {
-      const messageIndex = state.messages[action.payload.channel_id].findIndex(
-        (message) => message.id === -1
-      );
+    // builder.addCase(asyncCreateMessageThunk.fulfilled, (state, action) => {
+    //   const messageIndex = state.messages[action.payload.channel_id].findIndex(
+    //     (message) => message.id === action.payload.message.id
+    //   );
 
-      if (messageIndex < 0) {
-        return;
-      }
+    //   console.log({ messageIndex });
 
-      const authorIndex = state.users[action.payload.channel_id].findIndex(
-        (user) => user.id === action.payload.message.user_id
-      );
+    //   if (messageIndex < 0) {
+    //     return;
+    //   }
 
-      if (authorIndex < 0) {
-        return;
-      }
+    //   const authorIndex = state.users[action.payload.channel_id].findIndex(
+    //     (user) => user.id === action.payload.message.user_id
+    //   );
 
-      state.messages[action.payload.channel_id][messageIndex] = {
-        ...action.payload.message,
-        isPending: false,
-        author: state.users[action.payload.channel_id][authorIndex],
-      };
-    });
+    //   if (authorIndex < 0) {
+    //     return;
+    //   }
+
+    //   state.messages[action.payload.channel_id][messageIndex] = {
+    //     ...action.payload.message,
+    //     isPending: false,
+    //     author: state.users[action.payload.channel_id][authorIndex],
+    //   };
+    // });
     builder.addCase(asyncReadMessagesThunk.fulfilled, (state, action) => {
       const { channel_id, messages, users } = action.payload;
       state.messages[channel_id] = messages.map((message) => ({
@@ -293,8 +302,12 @@ const messageSlice = createSlice({
   },
 });
 
-export const { createMessageAction, updateMessageAction, deleteMessageAction } =
-  messageSlice.actions;
+export const {
+  initializeChannelAction,
+  createMessageAction,
+  updateMessageAction,
+  deleteMessageAction,
+} = messageSlice.actions;
 
 export const selectMessage = (state: RootState) => state.message;
 

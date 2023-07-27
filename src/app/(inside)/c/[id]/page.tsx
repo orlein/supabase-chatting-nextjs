@@ -1,6 +1,7 @@
 'use client';
 
 import ChannelMessageList from '@/app/(inside)/c/[id]/ChannelMessageList';
+import { DRAWER_WIDTH } from '@/common/components/layouts/Drawer';
 import useMessageListener from '@/features/messageSlice/useMessageListener';
 import useMessageSlice from '@/features/messageSlice/useMessageSlice';
 import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
@@ -24,6 +25,7 @@ export default function SingleChannelPage(props: SingleChannelPageProps) {
       handleClickCreateNewMessage,
     },
   } = useMessageSlice({ channel_id: props.params.id });
+
   const inputRef = React.useRef<HTMLInputElement>(null);
   React.useEffect(() => {
     inputRef?.current?.focus();
@@ -37,7 +39,7 @@ export default function SingleChannelPage(props: SingleChannelPageProps) {
           flexGrow: 1,
           bottom: 0,
           position: 'fixed',
-          width: '100%',
+          width: `calc(100% - ${DRAWER_WIDTH}px)`,
           backgroundColor: theme.palette.background.paper,
         })}
       >

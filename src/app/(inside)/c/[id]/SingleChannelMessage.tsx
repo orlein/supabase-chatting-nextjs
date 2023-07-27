@@ -1,3 +1,4 @@
+import useAuthSlice from '@/features/authSlice/useAuthSlice';
 import {
   MessageWithAuthor,
   asyncDeleteMessageThunk,
@@ -17,6 +18,9 @@ type SingleChannelMessageProps = MessageWithAuthor & {
 
 export default function SingleChannelMessage(props: SingleChannelMessageProps) {
   const dispatch = useAppDispatch();
+  const {
+    authState: { session },
+  } = useAuthSlice();
 
   const handleDeleteMessage: (
     message_id: number
@@ -50,7 +54,18 @@ export default function SingleChannelMessage(props: SingleChannelMessageProps) {
           justifyContent: 'center',
         }}
       >
-        <Chip label={props.author.username} />
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent:
+              session?.user.email === props.author.username
+                ? 'flex-end'
+                : 'flex-start',
+          }}
+        >
+          <Chip label={props.author.username} />
+        </Box>
         <Box
           sx={{
             display: 'flex',
@@ -72,8 +87,11 @@ export default function SingleChannelMessage(props: SingleChannelMessageProps) {
             sx={{
               display: 'flex',
               flexDirection: 'column',
+              minWidth: 150,
+              maxWidth: 150,
             }}
           >
+            <Typography variant="caption">{props.id}</Typography>
             <Typography variant="caption">
               <ReactTimeAgo date={inserted_at} />
             </Typography>

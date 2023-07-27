@@ -30,7 +30,7 @@ export default function ChannelMessageList(props: ChannelMessageListProps) {
         style={{
           display: 'flex',
           flex: 1,
-          flexDirection: 'column',
+          flexDirection: 'column-reverse',
           padding: 10,
         }}
       >

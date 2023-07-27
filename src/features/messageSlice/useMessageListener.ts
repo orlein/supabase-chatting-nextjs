@@ -21,7 +21,7 @@ export default function useMessageListener(props: { channel_id: number }) {
       (payload) => {
         dispatch(
           createMessageAction({
-            channel_id: props.channel_id,
+            channel_id: payload.channel_id,
             message: payload,
           })
         );
@@ -29,7 +29,7 @@ export default function useMessageListener(props: { channel_id: number }) {
       (payload) => {
         dispatch(
           updateMessageAction({
-            channel_id: props.channel_id,
+            channel_id: payload.channel_id,
             message: payload,
           })
         );
@@ -37,7 +37,7 @@ export default function useMessageListener(props: { channel_id: number }) {
       (payload) => {
         dispatch(
           deleteMessageAction({
-            channel_id: props.channel_id,
+            channel_id: payload.channel_id,
             message_id: payload.id,
           })
         );
