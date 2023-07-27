@@ -273,10 +273,13 @@ const messageSlice = createSlice({
     // });
     builder.addCase(asyncReadMessagesThunk.fulfilled, (state, action) => {
       const { channel_id, messages, users } = action.payload;
-      state.messages[channel_id] = messages.map((message) => ({
-        ...message,
-        author: users.find((user) => user.id === message.user_id)!,
-      }));
+      state.messages[channel_id] = [
+        ...messages.map((message) => ({
+          ...message,
+          author: users.find((user) => user.id === message.user_id)!,
+        })),
+        ...state.messages[channel_id],
+      ];
       state.users[channel_id] = users;
     });
     builder.addMatcher(
