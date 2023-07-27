@@ -14,13 +14,19 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import { useRouter } from 'next/navigation';
 import React from 'react';
 
 export default function MiniDrawer(props: React.PropsWithChildren) {
   const {
     authState: { isSignIn, handleSignOut },
   } = useAuthSlice();
+  const router = useRouter();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+
+  const handleRouteMyProfile = React.useCallback(() => {
+    router.push('/my-profile');
+  }, [router]);
 
   const handleClose = React.useCallback(() => {
     setAnchorEl(null);
@@ -79,6 +85,7 @@ export default function MiniDrawer(props: React.PropsWithChildren) {
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
               >
+                <MenuItem onClick={handleRouteMyProfile}>My Profile</MenuItem>
                 <MenuItem onClick={handleSignOut}>Sign out</MenuItem>
               </Menu>
             </div>
@@ -90,9 +97,9 @@ export default function MiniDrawer(props: React.PropsWithChildren) {
         <Divider />
         <ChannelList open />
       </Drawer>
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+      <Box component="main" sx={{ flexGrow: 1 }}>
         <DrawerHeader />
-        {props.children}
+        <Box component="section">{props.children}</Box>
       </Box>
     </Box>
   );

@@ -3,34 +3,37 @@
 import SingleChannelMessage from '@/app/(inside)/c/[id]/SingleChannelMessage';
 import useAuthSlice from '@/features/authSlice/useAuthSlice';
 import useMessageSlice from '@/features/messageSlice/useMessageSlice';
-import { useRouter } from 'next/navigation';
-import styles from './ChannelMessageList.module.css';
+import Box from '@mui/material/Box';
+import React from 'react';
 
 type ChannelMessageListProps = {
   channel_id: number;
 };
 export default function ChannelMessageList(props: ChannelMessageListProps) {
-  const router = useRouter();
   const {
-    messageState: { channelMessages, error },
-    newMessageState: {
-      message,
-      handleChangeNewMessage,
-      handleEnterCreateNewMessage,
-      handleClickCreateNewMessage,
-    },
+    messageState: { channelMessages },
   } = useMessageSlice(props);
 
   const {
     authState: { isAdmin, isModerator },
   } = useAuthSlice();
 
+  const ref = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    ref?.current?.scrollIntoView({ behavior: 'instant', block: 'end' });
+  }, [channelMessages.length]);
+
   return (
-    <div style={{ display: 'flex', flex: 1, flexDirection: 'column' }}>
-      <button onClick={() => router.back()}>back</button>
-      <p>{error}</p>
-      <h1>Channel Message List</h1>
-      <div className={styles.list}>
+    <>
+      <Box
+        style={{
+          display: 'flex',
+          flex: 1,
+          flexDirection: 'column',
+          padding: 10,
+        }}
+      >
         {channelMessages.map((message) => (
           <SingleChannelMessage
             key={message.id}
@@ -38,14 +41,8 @@ export default function ChannelMessageList(props: ChannelMessageListProps) {
             isDeleteEnabled={isAdmin || isModerator}
           />
         ))}
-      </div>
-      <input
-        type="text"
-        value={message}
-        onChange={handleChangeNewMessage}
-        onKeyDown={handleEnterCreateNewMessage}
-      />
-      <button onClick={handleClickCreateNewMessage}>add message</button>
-    </div>
+      </Box>
+      <Box sx={{ height: 64 }} ref={ref} />
+    </>
   );
 }
