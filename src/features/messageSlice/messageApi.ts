@@ -35,6 +35,7 @@ export type CreateMessageParams = {
   channel_id: number;
   user_id: string;
   message: string;
+  client_side_uuid?: string;
 };
 
 async function supabaseCreateMessage(params: CreateMessageParams) {
@@ -42,6 +43,7 @@ async function supabaseCreateMessage(params: CreateMessageParams) {
     channel_id: params.channel_id,
     user_id: params.user_id,
     message: params.message,
+    client_side_uuid: params.client_side_uuid,
   });
 
   return result.data;

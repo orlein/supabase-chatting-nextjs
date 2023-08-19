@@ -10,6 +10,7 @@ import { readUser } from '@/features/messageSlice/userApi';
 import createAppAsyncThunk from '@/features/redux/createAppAsyncThunk';
 import { RootState } from '@/redux/store';
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { v4 as uuidv4 } from 'uuid';
 
 export type Message = Database['public']['Tables']['messages']['Row'] & {
   isPending?: boolean;
@@ -61,7 +62,12 @@ export const asyncReadMessagesThunk = createAppAsyncThunk(
     const users = maybeUsers.filter(
       (user) => typeof user !== 'undefined'
     ) as MessageUser[];
-    return { channel_id: Number(params.channel_id), messages, users };
+
+    return {
+      channel_id: Number(params.channel_id),
+      messages,
+      users,
+    };
   }
 );
 
@@ -98,6 +104,7 @@ export const asyncCreateMessageThunk = createAppAsyncThunk(
     await createMessage({
       ...params,
       user_id,
+      client_side_uuid: uuidv4(),
     });
     // return { channel_id, message: newMessage };
     return { channel_id };
@@ -179,10 +186,13 @@ const messageSlice = createSlice({
         return;
       }
 
-      state.messages[action.payload.channel_id].unshift({
-        ...action.payload.message,
-        author: state.users[action.payload.channel_id][authorIndex],
-      });
+      state.messages[action.payload.channel_id] = [
+        {
+          ...action.payload.message,
+          author: state.users[action.payload.channel_id][authorIndex],
+        },
+        ...state.messages[action.payload.channel_id],
+      ];
     },
     updateMessageAction: (
       state,
@@ -273,13 +283,29 @@ const messageSlice = createSlice({
     // });
     builder.addCase(asyncReadMessagesThunk.fulfilled, (state, action) => {
       const { channel_id, messages, users } = action.payload;
-      state.messages[channel_id] = [
+
+      const newMessages = [
         ...messages.map((message) => ({
           ...message,
           author: users.find((user) => user.id === message.user_id)!,
         })),
         ...state.messages[channel_id],
       ];
+
+      const uniqueMessages = newMessages.reduce((acc, message) => {
+        if (
+          acc.findIndex(
+            (accMessage) =>
+              accMessage.client_side_uuid === message.client_side_uuid
+          ) > -1
+        ) {
+          return [...acc];
+        }
+
+        return [...acc, message];
+      }, [] as MessageWithAuthor[]);
+
+      state.messages[channel_id] = uniqueMessages;
       state.users[channel_id] = users;
     });
     builder.addMatcher(

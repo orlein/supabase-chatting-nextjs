@@ -36,7 +36,7 @@ export default function ChannelMessageList(props: ChannelMessageListProps) {
       >
         {channelMessages.map((message) => (
           <SingleChannelMessage
-            key={message.id}
+            key={message.client_side_uuid}
             {...message}
             isDeleteEnabled={isAdmin || isModerator}
           />
